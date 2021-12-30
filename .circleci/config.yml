@@ -230,7 +230,8 @@ jobs:
             . ~/.nvm/nvm.sh
             nvm install node
             node -e "console.log('Running Node.js ' + process.version)"
-            echo "npm version: ${npm -v}"
+            NPM_VERSON=$(npm -v)
+            echo ("npm version: ${NPM_VERSION}"
       - attach_workspace:
           at: ~/
       - run:
