@@ -195,7 +195,7 @@ jobs:
             # print content of migrations_dump.txt
             cat migrations_dump.txt
       - save_cache:
-          key: [migrations-run]
+          key: migrations-run
           paths:
             - backend/migrations_dump.txt
       - run:
