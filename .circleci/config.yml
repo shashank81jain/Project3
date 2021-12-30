@@ -230,6 +230,7 @@ jobs:
             . ~/.nvm/nvm.sh
             nvm install node
             node -e "console.log('Running Node.js ' + process.version)"
+            npm -v
       - attach_workspace:
           at: ~/
       - run:
