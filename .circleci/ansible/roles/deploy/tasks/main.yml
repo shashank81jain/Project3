@@ -33,3 +33,12 @@
     name: "{{ item }}"
   with_items:
     - pm2
+
+- name: install all modules that are listed on package.json file and their dependencies
+  command: npm install
+
+- name: stop default npm script via pm2
+  command: pm2 stop default
+
+- name:  run built-in npm script via pm2
+  command: pm2 start npm -- start
