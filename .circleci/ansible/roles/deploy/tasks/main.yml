@@ -12,6 +12,7 @@
 
 # nodejs installation below is following instructions from https://kyle.pericak.com/nodejs-ansible.html
 - name: "Add nodejs apt key"
+  become: true
   apt_key:
     url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
     state: present
