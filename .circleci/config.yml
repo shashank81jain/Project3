@@ -178,7 +178,7 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       # rollback on failure
-      - destroy-environment
+      # TODO
 
   run-migrations:
     docker:
@@ -213,7 +213,7 @@ jobs:
             #    --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             # fi
       # Here's where you will add some code to rollback on failure 
-      - destroy-environment  
+      # TODO 
 
   deploy-frontend:
     docker:
@@ -254,7 +254,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure 
-      - destroy-environment
+      # TODO
 
   deploy-backend:
     docker:
@@ -318,5 +318,7 @@ workflows:
       #     requires: [run-migrations]
       # TESTING
       - deploy-infrastructure
-      - deploy-backend:
+      - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - deploy-backend:
+          requires: [configure-infrastructure]
