@@ -313,9 +313,10 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances \
+            export BACKEND_IP=$(aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople" --output text)
+            echo ${BACKEND_IP}
       - run:
           name: Backend smoke test.
           command: |
@@ -367,10 +368,11 @@ workflows:
       # - smoke-test:
       #     requires: [deploy-frontend, deploy-backend]
       # TEST below
-      - deploy-infrastructure
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - deploy-backend:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-backend]
+      # - deploy-infrastructure
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - deploy-backend:
+      #     requires: [configure-infrastructure]
+      # - smoke-test:
+      #     requires: [deploy-backend]
+      - smoke-test
