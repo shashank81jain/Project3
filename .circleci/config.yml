@@ -302,7 +302,7 @@ jobs:
           name: Install dependencies
           command: |
             # install aws cli
-            apk add --update aws
+            apk add --update awscli
       - run:
           name: Get backend url
           command: |
