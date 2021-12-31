@@ -303,7 +303,6 @@ jobs:
           command: |
             apk update
             # install aws cli
-            # apk add --update awscli
             apk add --no-cache \
                 python3 \
                 py3-pip \
@@ -368,7 +367,8 @@ workflows:
       # - smoke-test:
       #     requires: [deploy-frontend, deploy-backend]
       # TEST below
-      # - deploy-infrastructure
-      # - smoke-test:
-      #     requires: [deploy-infrastructure]
-      - smoke-test
+      - deploy-infrastructure
+      - deploy-backend:
+          requires: [deploy-infrastructure]
+      - smoke-test:
+          requires: [deploy-backend]
