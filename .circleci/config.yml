@@ -313,11 +313,11 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances \
+            # save vato BASH_ENV in order to use the variable in the next step -> https://circleci.com/docs/2.0/env-vars/#using-parameters-and-bash-environment 
+            echo 'BACKEND_IP=$(aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:project,Values=udapeople" --output text)
-            # save vato BASH_ENV in order to use the variable in the next step -> https://circleci.com/docs/2.0/env-vars/#using-parameters-and-bash-environment
-            echo ${BACKEND_IP} >> $BASH_ENV
+            --filters "Name=tag:project,Values=udapeople" --output text)' \
+            >> $BASH_ENV
       - run:
           name: Backend smoke test.
           command: |
