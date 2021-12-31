@@ -311,17 +311,11 @@ jobs:
             echo 'aws cli version:'
             aws --version
       - run:
-          name: Get backend url
+          name: Get backend url and rune backend smoke test.
           command: |
-            # save vato BASH_ENV in order to use the variable in the next step -> https://circleci.com/docs/2.0/env-vars/#using-parameters-and-bash-environment 
-            echo 'BACKEND_IP=$(aws ec2 describe-instances \
+            BACKEND_IP=$(aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:project,Values=udapeople" --output text)' \
-            >> $BASH_ENV
-      - run:
-          name: Backend smoke test.
-          command: |
-            echo ${BACKEND_IP}
+            --filters "Name=tag:project,Values=udapeople" --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
