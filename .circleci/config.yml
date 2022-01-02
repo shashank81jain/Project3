@@ -304,18 +304,19 @@ jobs:
             apk add --update tar
             # install nodejs and npm
             apk add --update nodejs npm
+            # install aws cli
+            apk add --update aws-cli
       - run:
           name: Deploy backend
           # increase maximum job run time to 30 min since ansible playbook runs for >10 min
           no_output_timeout: 30m
           command: |
             cd backend
-            npm install
+            npm i
             npm run build
             cd ..
-            ls -l
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz
+            tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents of the inventory.txt file are -------"
             cat inventory.txt
@@ -394,28 +395,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend] 
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-frontend, deploy-backend]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend] 
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-frontend, deploy-backend]
+      - deploy-backend
