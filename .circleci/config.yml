@@ -19,24 +19,25 @@ commands:
     parameters:
       # Add parameter here     
     steps:
-      - restore_cache:
-          keys: [migrations-run]
+      # - restore_cache:
+      #     keys: [migrations-run]
       - run:
           name: Revert migrations
           when: on_fail
           command: |
+            # TODO: implement solution via artifacts
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            cat ~/project/backend/migrations_dump.txt
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-            then
-              SUCCESS = 1
-            fi
-            if(( $SUCCESS==1 )); 
-            then
-             cd ~/project/backend
-             npm install
-             npm run migration:revert
-            fi
+            # cat ~/project/backend/migrations_dump.txt
+            # if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            # then
+            #   SUCCESS = 1
+            # fi
+            # if(( $SUCCESS==1 )); 
+            # then
+            #  cd ~/project/backend
+            #  npm install
+            #  npm run migration:revert
+            # fi
 
 jobs:
   build-frontend:
@@ -222,10 +223,10 @@ jobs:
             npm run migrations > migrations_dump.txt
             # print content of migrations_dump.txt
             cat migrations_dump.txt
-      - save_cache:
-          key: migrations-run
-          paths:
-            - backend/migrations_dump.txt
+      - store_artifacts:
+          # TODO: testing
+          path: ~/project/backend/migrations_dump.txt
+          destination: migration-results
       - run:
           name: Send migration results to memstash
           command: |
@@ -320,6 +321,7 @@ jobs:
             cd backend
             npm i
             npm run build
+            cp package* ./dist
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
