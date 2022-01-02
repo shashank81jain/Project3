@@ -9,7 +9,7 @@
   become: yes
   shell: |
     cd ~
-    ll
+    ls -l
 
 - name: copy files to backend
   become: yes
