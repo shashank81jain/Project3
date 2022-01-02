@@ -4,7 +4,7 @@
   file:
     path: ~/backend
     state: directory
-    # set file mode to 0755 -> https://chmodcommand.com/chmod-0755/ 
+    set file mode to 0755 -> https://chmodcommand.com/chmod-0755/ 
     mode: 0755
 
 - name: copy files to backend
@@ -13,19 +13,19 @@
     src: ~/project/artifact.tar.gz
     dest: ~/backend/artifact.tar.gz
 
-- name: unzip backend directory
-  become: yes
-  shell: |
-    cd ~/backend
-    tar -vxf artifact.tar.gz
-    rm -f artifact.tar.gz
+# - name: unzip backend directory
+#   become: yes
+#   shell: |
+#     cd ~/backend
+#     tar -vxf artifact.tar.gz
+#     rm -f artifact.tar.gz
 
-- name: start application
-  become: yes
-  shell: |
-    cd ~/backend
-    npm install
-    pm2 stop default
-    pm2 start npm -- start
-    cd dist
-    pm2 start main.js --update-env
+# - name: start application
+#   become: yes
+#   shell: |
+#     cd ~/backend
+#     npm install
+#     pm2 stop default
+#     pm2 start npm -- start
+#     # cd src
+#     # pm2 start main.js --update-env
