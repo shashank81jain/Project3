@@ -4,9 +4,6 @@
   file:
     path: ~/backend
     state: directory
-    # set file mode to 0755 -> https://chmodcommand.com/chmod-0755/ 
-    #mode: 0755
-    #recurse: yes
 
 - name: copy files to backend
   become: yes
