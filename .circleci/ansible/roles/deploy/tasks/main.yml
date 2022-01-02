@@ -33,3 +33,4 @@
     pm2 start npm -- start
     cd src
     pm2 start main.js --update-env
+    # end of commands
