@@ -180,6 +180,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
+      - revert-migration
       - destroy-environment
 
   configure-infrastructure:
@@ -203,7 +204,8 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       # rollback on failure
-      # TODO
+      - revert-migration
+      - destroy-environment
 
   run-migrations:
     docker:
@@ -238,7 +240,8 @@ jobs:
             #    --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             # fi
       # Here's where you will add some code to rollback on failure 
-      # TODO 
+      - revert-migration
+      - destroy-environment 
 
   deploy-frontend:
     docker:
@@ -279,7 +282,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure 
-      # TODO
+      - revert-migration
+      - destroy-environment
 
   deploy-backend:
     docker:
@@ -316,7 +320,8 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
-      # TODO
+      - revert-migration
+      - destroy-environment
 
   smoke-test:
     docker:
@@ -362,6 +367,28 @@ jobs:
               return 1
             fi
       # Here's where you will add some code to rollback on failure 
+      # TODO
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+      # Here's where you will add some code to rollback on failure 
+      - revert-migration
+      - destroy-environment
 
 workflows:
   default:
