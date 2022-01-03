@@ -241,6 +241,21 @@ jobs:
             npm run migrations > migrations_dump.txt
             # print content of migrations_dump.txt
             cat migrations_dump.txt
+      # START TODO: install dependency aws cli
+      # - run:
+      #     name: install dependencies
+      #     command: |
+      #       apt-get update
+      #       apt-get install -y python3-pip
+      #       pip3 install awscli
+      #       echo 'aws cli version:'
+      #       aws --version
+      # - run:
+      #     name: copy migrations_dump to AWS S3
+      #     command: |
+      #       cd backend
+      #       aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
+      # END OF TODO
       - store_artifacts:
           # TODO: testing
           path: ~/project/backend/migrations_dump.txt
@@ -252,6 +267,7 @@ jobs:
             then
               echo "Successful migration."
             elif grep -q "No migrations are pending." ~/project/backend/migrations_dump.txt
+            then
               echo "No migrations are pending."
             fi
             # sample code below is not used since memstash.io is unavailable
