@@ -20,6 +20,14 @@
     tar -vxf artifact.tar.gz
     rm -f artifact.tar.gz
 
+- print environment variables
+  become: yes
+  shell: |
+    printenv
+  register: printenv_out
+
+- debug: var=printenv_out.stdout_lines
+
 - name: start application
   become: yes
   shell: |
