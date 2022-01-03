@@ -197,6 +197,14 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            # install aws cli
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install awscli 
+            echo 'aws cli version:'
+            aws --version
       - run:
           name: Configure server
           # increase maximum job run time to 30 min since ansible playbook runs for >10 min

@@ -20,14 +20,6 @@
     tar -vxf artifact.tar.gz
     rm -f artifact.tar.gz
 
-- print environment variables
-  become: yes
-  shell: |
-    printenv
-  register: printenv_out
-
-- debug: var=printenv_out.stdout_lines
-
 - name: start application
   become: yes
   shell: |
@@ -37,3 +29,22 @@
     pm2 start npm -- start
     cd dist
     pm2 start main.js --update-env
+  environment:
+    ENVIRONMENT: production
+    TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
+    TYPEORM_MIGRATIONS_DIR: "./migrations"
+    TYPEORM_MIGRATIONS: "./migrations/*.js"
+    TYPEORM_ENTITIES: "./modules/domain/*/entities/*.entity.js"
+    TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
+    TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+    TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
+    TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
+    TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
+
+- name: print environment variables
+  become: yes
+  shell: |
+    printenv
+  register: printenv_out
+
+- debug: var=printenv_out.stdout_lines
