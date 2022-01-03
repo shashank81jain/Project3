@@ -26,6 +26,16 @@ commands:
           when: on_fail
           command: |
             # TODO: implement solution via artifacts
+            cd ~/project/backend
+            # Set an environment variable for your API token.
+            export CIRCLE_TOKEN=':20dc2a43b444411ca29a417e30182b9e40ea16ff'
+            # `curl` gets all artifact details for a build 
+            # then, the result is piped into `grep` to extract the URLs.
+            # finally, `wget` is used to download the the artifacts to the current directory in your terminal.
+            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts
+            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts \
+              | grep -o 'https://[^"]*' \
+              | wget --verbose --header "Circle-Token: $CIRCLE_TOKEN" --input-file -
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             # cat ~/project/backend/migrations_dump.txt
             # if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
@@ -240,7 +250,9 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              echo "Successful migration"
+              echo "Successful migration."
+            elif grep -q "No migrations are pending." ~/project/backend/migrations_dump.txt
+              echo "No migrations are pending."
             fi
             # sample code below is not used since memstash.io is unavailable
             # if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
@@ -321,8 +333,6 @@ jobs:
             && pip3 install awscli 
             echo 'aws cli version:'
             aws --version
-            # install curl
-            apk add --update curl
       - run:
           name: Deploy backend
           # increase maximum job run time to 30 min since ansible playbook runs for >10 min
@@ -363,6 +373,8 @@ jobs:
             && pip3 install awscli 
             echo 'aws cli version:'
             aws --version
+            # install curl
+            apk add --update curl
       - run:
           name: Get backend url and rune backend smoke test.
           command: |
@@ -413,9 +425,67 @@ jobs:
       - destroy-environment
       - revert-migrations
 
+  test-artifact-retrieval:
+    docker:
+      - image: python:3.7-alpine3.11 
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk update
+            apk upgrade
+            # install curl
+            apk add --update curl
+      - run:
+          name: retrieve artifacs from run migrations.
+          command: |
+            cd ~/project/backend
+            # Set an environment variable for your API token.
+            export CIRCLE_TOKEN=':20dc2a43b444411ca29a417e30182b9e40ea16ff'
+            # `curl` gets all artifact details for a build 
+            # then, the result is piped into `grep` to extract the URLs.
+            # finally, `wget` is used to download the the artifacts to the current directory in your terminal.
+            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts
+            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts \
+              | grep -o 'https://[^"]*' \
+              | wget --verbose --header "Circle-Token: $CIRCLE_TOKEN" --input-file -
+      - run:
+          name: return failure to end test
+          command: |
+            exit 1
+      # Here's where you will add some code to rollback on failure 
+      - destroy-environment
+
 workflows:
   default:
     jobs:
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend] 
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-frontend, deploy-backend]
+      # TESTING BELOW
       - build-frontend
       - build-backend
       - test-frontend:
@@ -435,9 +505,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
+      - test-artifact-retrieval:
           requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-frontend, deploy-backend]
