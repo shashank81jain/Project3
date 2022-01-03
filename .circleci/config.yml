@@ -10,9 +10,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
+            aws s3 rb --force s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws s3 rb --force s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -411,7 +411,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            # install nodejs on aws linux instance
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
       - run:
           name: Update cloudfront distribution
           command: |
@@ -493,7 +495,9 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
-      # TESTING BELOW
-      - reset-project:
+      - cloudfront-update:
           requires: [smoke-test]
+      # TESTING BELOW
+      # - reset-project:
+      #     requires: [cloudfront-update]
       # - test-run-migrations
