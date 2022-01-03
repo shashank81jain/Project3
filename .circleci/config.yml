@@ -494,6 +494,6 @@ workflows:
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
       # TESTING BELOW
-      - reset-project
+      - reset-project:
           requires: [smoke-test]
       # - test-run-migrations
