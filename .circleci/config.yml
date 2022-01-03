@@ -27,6 +27,9 @@ commands:
           command: |
             # TODO: implement solution via artifacts
             cd ~/project/backend
+            # get dump from aws s3
+            aws s3 cp s3://udapeople-migrations-dump/migrations_dump.txt ./
+            # alternative below - to be deleted
             # Set an environment variable for your API token.
             export CIRCLE_TOKEN=':20dc2a43b444411ca29a417e30182b9e40ea16ff'
             # `curl` gets all artifact details for a build 
@@ -241,21 +244,20 @@ jobs:
             npm run migrations > migrations_dump.txt
             # print content of migrations_dump.txt
             cat migrations_dump.txt
-      # START TODO: install dependency aws cli
-      # - run:
-      #     name: install dependencies
-      #     command: |
-      #       apt-get update
-      #       apt-get install -y python3-pip
-      #       pip3 install awscli
-      #       echo 'aws cli version:'
-      #       aws --version
-      # - run:
-      #     name: copy migrations_dump to AWS S3
-      #     command: |
-      #       cd backend
-      #       aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
-      # END OF TODO
+      # install dependency aws cli
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update
+            apt-get install -y python3-pip
+            pip3 install --upgrade awscli
+            echo 'aws cli version:'
+            aws --version
+      - run:
+          name: copy migrations_dump to AWS S3
+          command: |
+            cd backend
+            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
       - store_artifacts:
           # TODO: testing
           path: ~/project/backend/migrations_dump.txt
@@ -441,37 +443,31 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-  test-artifact-retrieval:
+  test-run-migrations:
     docker:
-      - image: python:3.7-alpine3.11 
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: create test file
           command: |
-            apk update
-            apk upgrade
-            # install curl
-            apk add --update curl
+            cd backend
+            echo "test of migrations dump file" > migrations_dump.txt
+      # install dependency aws cli
       - run:
-          name: retrieve artifacs from run migrations.
+          name: install dependencies
           command: |
-            cd ~/project/backend
-            # Set an environment variable for your API token.
-            export CIRCLE_TOKEN=':20dc2a43b444411ca29a417e30182b9e40ea16ff'
-            # `curl` gets all artifact details for a build 
-            # then, the result is piped into `grep` to extract the URLs.
-            # finally, `wget` is used to download the the artifacts to the current directory in your terminal.
-            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts
-            curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts \
-              | grep -o 'https://[^"]*' \
-              | wget --verbose --header "Circle-Token: $CIRCLE_TOKEN" --input-file -
+            apt-get update
+            apt-get install -y python3-pip
+            pip3 install --upgrade awscli
+            echo 'aws cli version:'
+            aws --version
       - run:
-          name: return failure to end test
+          name: copy migrations_dump to AWS S3
           command: |
-            exit 1
-      # Here's where you will add some code to rollback on failure 
-      - destroy-environment
+            cd backend
+            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
+            cat migrations_dump.txt
 
 workflows:
   default:
@@ -502,24 +498,4 @@ workflows:
       # - smoke-test:
       #     requires: [deploy-frontend, deploy-backend]
       # TESTING BELOW
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend] 
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - test-artifact-retrieval:
-          requires: [run-migrations]
+      - test-run-migrations
