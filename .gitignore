@@ -69,3 +69,4 @@ node_modules
 .env
 dist
 testscript.sh
+prometheus.yml
