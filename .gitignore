@@ -70,3 +70,4 @@ node_modules
 dist
 testscript.sh
 prometheus.yml
+alertmanager.yml
