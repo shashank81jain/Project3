@@ -452,7 +452,7 @@ jobs:
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}" 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}"  && "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}" ]]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               echo removing resources of OldWorkflowID: "${OldWorkflowID}"
               aws s3 rb --force s3://udapeople-${OldWorkflowID}
@@ -498,6 +498,10 @@ jobs:
             sudo apt-get install --upgrade awscli
             echo 'aws cli version:'
             aws --version
+      - run:
+          name: fail on purpose
+          command: |
+            return 1 
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations     
@@ -535,6 +539,6 @@ workflows:
       - cleanup:
           requires: [cloudfront-update]
       # TESTING BELOW
-      - reset-project:
-          requires: [cleanup]
+      # - reset-project:
+      #     requires: [cleanup]
       # - test-run-migrations
