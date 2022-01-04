@@ -500,8 +500,9 @@ jobs:
             sudo apt-get install --upgrade awscli
             echo 'aws cli version:'
             aws --version
-      - destroy-environment
-      - revert-migrations      
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations     
 
 workflows:
   default:
