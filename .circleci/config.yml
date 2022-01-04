@@ -442,23 +442,28 @@ jobs:
       - run:
           name: Get old stack workflow id, remove old stacks and files
           command: |
-            # Fetch the Old workflow ID
-            export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                    --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             # Fetch the stack names          
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Stack names: "${STACKS[@]}" 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            then
-              echo removing resources of OldWorkflowID: "${OldWorkflowID}"
-              aws s3 rb --force s3://udapeople-${OldWorkflowID}
-              aws cloudformation delete-stack --stack-name udapeople-backend-${OldWorkflowID}
-              aws cloudformation delete-stack --stack-name udapeople-frontend-${OldWorkflowID}
-            fi
+            echo Stack names: "${STACKS[@]}"
+            # get list of all WorkflowIDs from backend stacks
+            BackendStacks=$(aws cloudformation describe-stacks --no-paginate --query \
+            'Stacks[?StackName!=`null`]|[?contains(StackName, `backend`) == `true`].StackName' --output text)
+            for BackendStack in "${BackendStacks[@]}"
+            do
+              OldWorkflowID=${$BackendStack: -7}
+              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}" ]
+              then
+                echo removing resources of OldWorkflowID: "${OldWorkflowID}"
+                aws s3 rb --force s3://udapeople-${OldWorkflowID}
+                aws cloudformation delete-stack --stack-name udapeople-backend-${OldWorkflowID}
+                aws cloudformation delete-stack --stack-name udapeople-frontend-${OldWorkflowID}
+              else
+                echo '----------------- no old resources found -----------------'
+              fi
+            done
+            
 
   test-run-migrations:
     docker:
@@ -542,4 +547,4 @@ workflows:
       # - reset-project:
       #     requires: [cleanup]
       # - test-run-migrations
-      - deploy-infrastructure
+      - cleanup
