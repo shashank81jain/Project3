@@ -480,12 +480,12 @@ jobs:
             sudo apt-get install --upgrade awscli
             echo 'aws cli version:'
             aws --version
-      - run:
-          name: copy migrations_dump to AWS S3
-          command: |
-            cd backend
-            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
-            cat migrations_dump.txt
+      # - run:
+      #     name: copy migrations_dump to AWS S3
+      #     command: |
+      #       cd backend
+      #       aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
+      #       cat migrations_dump.txt
 
   reset-project:
     docker:
