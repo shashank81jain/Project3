@@ -453,7 +453,7 @@ jobs:
             for BackendStack in "${BackendStacks[@]}"
             do
               OldWorkflowID=${$BackendStack: -7}
-              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}" ]
+              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}" ]]
               then
                 echo removing resources of OldWorkflowID: "${OldWorkflowID}"
                 aws s3 rb --force s3://udapeople-${OldWorkflowID}
