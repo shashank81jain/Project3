@@ -450,6 +450,7 @@ jobs:
             # get list of all WorkflowIDs from backend stacks
             BackendStacks=$(aws cloudformation describe-stacks --no-paginate --query \
             'Stacks[?StackName!=`null`]|[?contains(StackName, `backend`) == `true`].StackName' --output text)
+            echo Backend stacks: "${BackendStacks[@]}"
             for BackendStack in "${BackendStacks[@]}"
             do
               OldWorkflowID=${BackendStack: -7}
