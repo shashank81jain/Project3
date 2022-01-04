@@ -452,7 +452,7 @@ jobs:
             'Stacks[?StackName!=`null`]|[?contains(StackName, `backend`) == `true`].StackName' --output text)
             for BackendStack in "${BackendStacks[@]}"
             do
-              OldWorkflowID=${$BackendStack: -7}
+              OldWorkflowID=${BackendStack: -7}
               if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}" ]]
               then
                 echo removing resources of OldWorkflowID: "${OldWorkflowID}"
