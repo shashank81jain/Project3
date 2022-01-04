@@ -538,4 +538,4 @@ workflows:
       # - reset-project:
       #     requires: [cleanup]
       # - test-run-migrations
-      - cleanup
+      - deploy-infrastructure
