@@ -292,7 +292,7 @@ jobs:
             pwd
             cd ..
             pwd
-            ls /home/circleci/project/.circleci/outputs
+            ls circleci/project/.circleci/outputs
             pwd
             ls
       - store_artifacts:
