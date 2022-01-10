@@ -275,7 +275,8 @@ jobs:
             cat migrations_dump.txt
             if grep -q "has been executed successfully." migrations_dump.txt
             then
-              touch ~/project/.circleci/outputs/db_migration_success
+              cd ..
+              touch .circleci/outputs/db_migration_success
               echo "touch done"
             else 
               echo "touch bypassed"
