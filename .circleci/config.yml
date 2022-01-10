@@ -35,9 +35,12 @@ commands:
             cat ~/project/backend/migrations_dump.txt
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              SUCCESS = 1
+              SUCCESS=1
+            elif grep -q "No migrations are pending" ~/project/backend/migrations_dump.txt
+            then
+              SUCCESS=1
             fi
-            if(( $SUCCESS==1 )); 
+            if [ ${SUCCESS} == "1" ]
             then
              cd ~/project/backend
              npm install
@@ -283,6 +286,7 @@ jobs:
             else 
               echo "Inside else of No migrations are pending"
             fi     
+            ls ~/project/.circleci/outputs
             cd ..
             cd .circleci/outputs
             pwd
