@@ -26,7 +26,7 @@ commands:
           command: |
             cd ~/project/backend
             # get dump from aws s3
-            aws s3 cp s3://udapeople-migrations-dump/migrations_dump.txt ./
+            aws s3 cp s3://udapeople-migrations-dump-sj/migrations_dump.txt ./
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             cat ~/project/backend/migrations_dump.txt
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
@@ -247,7 +247,7 @@ jobs:
           name: Send migration results to AWS S3
           command: |
             cd backend
-            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
+            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump-sj
       - store_artifacts:
           # TODO: testing
           path: ~/project/backend/migrations_dump.txt
@@ -489,7 +489,7 @@ jobs:
           name: copy migrations_dump to AWS S3
           command: |
             cd backend
-            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump
+            aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump-sj
             cat migrations_dump.txt
 
   reset-project:
