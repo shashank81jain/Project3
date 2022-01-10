@@ -44,7 +44,7 @@ commands:
             then
              cd ~/project/backend
              npm install
-             npm run migration:revert
+             npm run migrations:revert
              echo "Migration reverted."
             fi
 
@@ -286,9 +286,13 @@ jobs:
             else 
               echo "Inside else of No migrations are pending"
             fi     
-            ls ~/project/.circleci/outputs
             cd ..
-            cd .circleci/outputs
+            pwd
+            cd ..
+            pwd
+            cd ..
+            pwd
+            ls /home/circleci/project/.circleci/outputs
             pwd
             ls
       - store_artifacts:
