@@ -272,30 +272,7 @@ jobs:
           command: |
             cd backend
             aws s3 cp migrations_dump.txt s3://udapeople-migrations-dump-sj
-            cat migrations_dump.txt
-            if grep -q "has been executed successfully." migrations_dump.txt
-            then
-              cd ..
-              touch .circleci/outputs/db_migration_success
-              echo "touch done"
-            else 
-              echo "touch bypassed"
-            fi    
-            if grep -q "No migrations are pending" migrations_dump.txt
-            then
-              echo "Inside If of No migrations are pending"
-            else 
-              echo "Inside else of No migrations are pending"
-            fi     
-            cd ..
             pwd
-            cd ..
-            pwd
-            cd ..
-            pwd
-            ls circleci/project/.circleci/outputs
-            pwd
-            ls
       - store_artifacts:
           # TODO: testing
           path: ~/project/backend/migrations_dump.txt
